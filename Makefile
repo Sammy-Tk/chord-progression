@@ -29,14 +29,21 @@ install_requirements:
 streamlit:
 	streamlit run website/app.py --server.address 127.0.0.1 --server.port 8501 --server.baseUrlPath /chord_progression
 
+streamlit_background:
+	nohup streamlit run website/app.py --server.address 127.0.0.1 --server.port 8501 --server.baseUrlPath /chord_progression > streamlit.log 2>&1 &
+
 # legacy directive
 run_model: run_all
 
 run_workflow:
 	PREFECT__LOGGING__LEVEL=${PREFECT_LOG_LEVEL} python -m chords_prog_proj.flow.main
 
+# API
 run_api:
 	uvicorn chords_prog_proj.api.fast:app --host 127.0.0.1 --port 8888 --reload
+
+run_api_background:
+	nohup uvicorn chords_prog_proj.api.fast:app --host 127.0.0.1 --port 8888 --reload > fastapi.log 2>&1 &
 
 ##################### TESTS #####################
 default:

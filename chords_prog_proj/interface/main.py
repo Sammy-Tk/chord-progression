@@ -50,7 +50,6 @@ def train(
     # Create a dictionary which stores a unique token for each chord:
     # the key is the chord while the value is the corresponding token.
     chord_to_id = {}
-    chord_to_id['UNKNOWN'] = 0
     iter_ = 1
     for song in X:
         for chord in song:
@@ -59,12 +58,36 @@ def train(
             chord_to_id[chord] = iter_
             iter_ += 1
 
+    # Define the list of all notes and prefixes
+    all_notes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'A#', 'C#', 'D#', 'F#', 'G#', 'Ab', 'Bb', 'Db', 'Eb', 'Gb']
+    prefix = ['m', '7', 'm7', 'm7b5', 'dim', 'dim7', 'maj', 'maj7', 'sus2', 'sus4', 'aug', 'add9', '6', 'm6', '9', 'm9', '11', 'm11', '13', 'm13', 'dim9', 'hdim7', '5']
+
+    # Select chords that match the pattern of note + prefix or just the note itself
+    selected_chords = {
+        chord: value
+        for chord, value in chord_to_id.items()
+        if any(
+            chord.startswith(note) and chord[len(note):] in prefix for note in all_notes
+        ) or chord in all_notes  # Add this condition to select chords that are just the name of a note
+    }
+
+    chord_to_id = selected_chords
+
+    # Reassign consecutive IDs to chords, keeping 'UNKNOWN' at 0
+    chord_to_id_fixed = {'UNKNOWN': 0}
+    for idx, chord in enumerate(chord_to_id.keys(), start=1):
+        if chord != 'UNKNOWN':
+            chord_to_id_fixed[chord] = idx
+
+    # Replace the old chord_to_id with the fixed one
+    chord_to_id = chord_to_id_fixed
+
+    # Calculate vocab_size based on the fixed dictionary
+    vocab_size = len(chord_to_id)
+
     # Save dictionary to json file
     with open('chord_to_id.json', 'w') as f:
         json.dump(chord_to_id, f)
-
-    # Vocab size
-    vocab_size = len(chord_to_id)
 
     def get_X_y(song, length):
         """
@@ -113,13 +136,31 @@ def train(
     y_test = y[len_:]
 
     # Based on the dictionary of chords to id, tokenize X and y (chords to numbers)
-    X_train = [[chord_to_id[chord] for chord in song] for song in chords_train]
-    X_test = [[chord_to_id[chord] if chord in chord_to_id else chord_to_id['UNKNOWN'] for chord in song ] for song in chords_test]
+    X_train = [
+        [chord_to_id.get(chord, chord_to_id['UNKNOWN']) for chord in song]
+        for song in chords_train
+    ]
+    X_test = [
+        [chord_to_id.get(chord, chord_to_id['UNKNOWN']) for chord in song]
+        for song in chords_test
+    ]
+
     X_train = np.array(X_train)
     X_test = np.array(X_test)
 
-    y_train_token = [chord_to_id[chord] for chord in y_train]
-    y_test_token = [chord_to_id[chord] if chord in chord_to_id else chord_to_id['UNKNOWN'] for chord in y_test]
+    y_train_token = [
+        chord_to_id.get(chord, chord_to_id['UNKNOWN']) for chord in y_train
+    ]
+    y_test_token = [
+        chord_to_id.get(chord, chord_to_id['UNKNOWN']) for chord in y_test
+    ]
+
+    # Ensure the tokens are within bounds of vocab_size
+    max_token_train = max(y_train_token)
+    max_token_test = max(y_test_token)
+
+    if max_token_train >= vocab_size or max_token_test >= vocab_size:
+        print(f"Warning: Some tokens exceed vocab_size ({vocab_size}). Max train token: {max_token_train}, Max test token: {max_token_test}")
 
     # Convert the tokenized outputs to one-hot encoded categories
     y_train_cat = to_categorical(y_train_token, num_classes=vocab_size)
@@ -199,6 +240,8 @@ def pred(song: list = None,
 
     # Create dictionary id_to_chord
     id_to_chord = {v: k for k, v in chord_to_id.items()}
+    # Remove "UNKNOWN" value
+    id_to_chord.pop(0)
 
     if model is None:
         model = load_model()
@@ -216,8 +259,17 @@ def pred(song: list = None,
         # Return the index of nth probability
         pred_class = np.argsort(np.max(pred, axis=0))[-randomness]
 
+        if pred_class == 0:
+            pred_class = 1
+
         # Turn the index into a chord
-        pred_chord = id_to_chord[pred_class]
+        try:
+            pred_chord = id_to_chord[pred_class]
+        except:
+            import ipdb, traceback, sys
+            extype, value, tb = sys.exc_info()
+            traceback.print_exc()
+            ipdb.post_mortem(tb)
 
         return pred_chord
 
@@ -250,6 +302,6 @@ if __name__ == '__main__':
     pred(
         song = new_song,
         n_chords= 10,
-        randomness = 8
+        randomness = 1
         )
     # evaluate()
