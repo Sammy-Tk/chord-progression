@@ -3,7 +3,6 @@
 run_chords_graph:
 	python -c 'from chords_prog_proj.ml_logic.utils import count_chords; count_chords("final_df_06-12-22_12:35.csv", histplot=True, out_of_pre=True)'
 
-# Other makes
 reinstall_package:
 	@pip uninstall -y chords_prog_proj || :
 	@pip install -e .
@@ -26,11 +25,14 @@ install_requirements:
 	@pip install -r requirements.txt
 
 # Website
-streamlit:
+run_streamlit:
 	streamlit run website/app.py --server.address 127.0.0.1 --server.port 8501 --server.baseUrlPath /chord_progression
 
-streamlit_background:
+run_streamlit_background:
 	nohup streamlit run website/app.py --server.address 127.0.0.1 --server.port 8501 --server.baseUrlPath /chord_progression > streamlit.log 2>&1 &
+
+stop_streamlit:
+	pkill -f "streamlit run website/app.py"
 
 # legacy directive
 run_model: run_all
@@ -44,6 +46,9 @@ run_api:
 
 run_api_background:
 	nohup uvicorn chords_prog_proj.api.fast:app --host 127.0.0.1 --port 8888 --reload > fastapi.log 2>&1 &
+
+stop_api:
+	pkill -f "uvicorn chords_prog_proj.api.fast:app"
 
 ##################### TESTS #####################
 default:

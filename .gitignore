@@ -22,5 +22,9 @@ dist/
 *.sublime-workspace
 **/*.code-workspace
 
+# Log files
+*.log
+
+# Folders
 mlops/
 static/

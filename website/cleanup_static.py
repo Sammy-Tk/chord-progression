@@ -4,8 +4,11 @@ import time
 # Path to the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Define static_dir as one folder up from the script's location
-static_dir = os.path.join(script_dir, '..', 'static')
+# Parent directory
+parent_dir = os.path.dirname(script_dir)
+
+# Directory "static"
+static_dir = os.path.join(parent_dir, 'static')
 
 # File age threshold
 age_threshold_minutes = 50 # in minutes
