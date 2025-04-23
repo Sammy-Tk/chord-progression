@@ -78,7 +78,7 @@ input_chords = st.session_state.selected_chords
 # User input for number of chords to generate
 n_chords = st.number_input(
     label = "Number of chords to generate (1 to 30)",
-    value = 2,
+    value = 15,
     min_value = 1,
     max_value = 30,
 )
@@ -88,7 +88,7 @@ randomness = st.slider(
     label = "Chords complexity",
     min_value = 1,
     max_value = 10,
-    value = 2
+    value = 6
 )
 
 st.markdown(body = "## Prediction")

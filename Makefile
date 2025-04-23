@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 #################### PACKAGE ACTIONS ###################
 # EC's makes
 run_chords_graph:
@@ -45,6 +47,7 @@ run_api:
 	uvicorn chords_prog_proj.api.fast:app --host 127.0.0.1 --port 8888 --reload
 
 run_api_background:
+	set -o allexport && source .env && set +o allexport && \
 	nohup uvicorn chords_prog_proj.api.fast:app --host 127.0.0.1 --port 8888 --reload > fastapi.log 2>&1 &
 
 stop_api:
