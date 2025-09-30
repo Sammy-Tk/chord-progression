@@ -88,7 +88,7 @@ randomness = st.slider(
     label = "Chords complexity",
     min_value = 1,
     max_value = 10,
-    value = 6
+    value = 5,
 )
 
 st.markdown(body = "## Prediction")
@@ -258,14 +258,19 @@ if st.button(label="Generate Chords", type="primary"):
                     # Save MIDI file
                     song_stream.write(fmt='midi', fp=midi_path)
 
+                    # Read MIDI file and encode as base64
+                    with open(midi_path, "rb") as f:
+                        midi_bytes = f.read()
+                    midi_b64 = base64.b64encode(midi_bytes).decode('utf-8')
+
                     # Embed the MIDI player in the Streamlit app
                     # See https://github.com/cifkao/html-midi-player
                     html_code = f"""
                     <script
-                        src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0">
+                        src="https://cdn.jsdelivr.net/combine/npm/tone@14.8.49,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.6.0">
                     </script>
                     <midi-player
-                        src="/{midi_path}"
+                        src="data:audio/midi;base64,{midi_b64}"
                         sound-font="https://storage.googleapis.com/magentadata/js/soundfonts/salamander"
                         visualizer="#myVisualizer">
                     </midi-player>
