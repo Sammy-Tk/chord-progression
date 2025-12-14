@@ -254,7 +254,7 @@ def pred(song: list = None,
         song_convert = [chord_to_id[chord] for chord in song]
 
         # Return an array of size vocab_size, with the probabilities
-        pred = model.predict([song_convert], verbose=0)
+        pred = model.predict(np.array([song_convert]), verbose=0)
 
         # Return the index of nth probability
         pred_class = np.argsort(np.max(pred, axis=0))[-randomness]

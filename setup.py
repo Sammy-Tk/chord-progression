@@ -6,7 +6,7 @@ with open("requirements.txt") as f:
 requirements = [x.strip() for x in content if "git+" not in x]
 
 setup(name='chords-progression',
-      version="0.0.6",
+      version="1.0.0",
       description="Chord Progression Prediction",
       license="MIT",
       author="Sammy El Takriti",

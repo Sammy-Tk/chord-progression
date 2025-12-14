@@ -6,37 +6,22 @@ numpy
 pandas
 seaborn
 scikit-learn
+tensorflow
 
 pyarrow
+
+python-dotenv
+kaggle
+
+# Dev
+ipdb
+ipykernel
 
 # API
 fastapi
 pytz
 uvicorn
 
-python-dotenv
-ipdb
-ipykernel
-
-kaggle
-
 # Front-end
 streamlit
 music21
-
-
-# pygeohash
-# nbresult
-# yapf
-# protobuf==3.20
-# tensorflow==2.10.0
-# google-cloud-bigquery<3.0.0
-# google-cloud-storage
-
-# mlflow~=1.26.1
-# prefect<2
-# prefect[viz]
-# psycopg2-binary
-
-# httpx
-# pytest-asyncio

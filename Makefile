@@ -1,10 +1,6 @@
 SHELL := /bin/bash
 
 #################### PACKAGE ACTIONS ###################
-# EC's makes
-run_chords_graph:
-	python -c 'from chords_prog_proj.ml_logic.utils import count_chords; count_chords("final_df_06-12-22_12:35.csv", histplot=True, out_of_pre=True)'
-
 reinstall_package:
 	@pip uninstall -y chords_prog_proj || :
 	@pip install -e .
